@@ -1,0 +1,79 @@
+<%- include ("partials/header.ejs") %>
+<% if (locals.content) {%>
+    <% console.log(content) %>
+<main class="body-main">
+    <section class="player-main">
+        <div class="player-bg">
+            <img src="images/splash/Akali_68.jpg" alt="">
+            <div class="player-icon">
+                <img src="images/profileicon/<%=content.profileIconId%>.png" alt="">
+            </div>
+            <section class="player-info">
+                <div class="info-1">
+                    <div class="player-name">
+                        <h2><%= content.name %></h2>
+                    </div>
+                    <div class="player-level">
+                        <p>Lvl <%= content.summonerLevel %></p>
+                    </div>
+                </div>
+                <div class="info-2">
+                    <div class="player-challengues1 circle"></div>
+                    <div class="player-challengues2 circle"></div>
+                    <div class="player-challengues3 circle"></div>
+                    <div class="player-challengues4 circle"></div>
+                    <div class="player-challengues5 circle"></div>
+                </div>
+            </section>
+        </div>
+    </section>
+    <section class="summary-content">
+        <div class="publicity">
+            <img src="images/splash/Aatrox_21.jpg" alt="">
+        </div>
+        <section class="player-elo">
+            <div class="soloq-elo">
+                <div class="soloq-set">
+                    <p class="ranked-type">Solo/Dúo</p>
+                </div>
+                <div class="qemblem">
+                    <img src="images/ranked-emblems/emblem-master.png" alt="">
+                </div>
+                <div class="elo-name">
+                    <p class="elo-title">Master I</p>
+                </div>
+                <div class="elo-points">
+                    <p class="points-number">245</p>
+                    <p class="pl">PL</p>
+                </div>
+                <div class="elo-wins">
+                    <p class="v1">12</p>
+                    <p class="v2">V</p>
+                    <p class="d1">15</p>
+                    <p class="d2">D</p>
+                </div>
+                <div class="glob-ranking">
+                    <p class="rtype-global">Global:</p>
+                    <p class="rkglobalp">123,234</p>
+                </div>
+                <div class="loc-ranking">
+                    <p class="rtype-local">Local:</p>
+                    <p class="rklocalp">1,214</p>
+                </div>
+            </div>
+            <div class="flexx-elo">
+                <div class="flexx-set"></div>
+            </div>
+        </section>
+        <div class="champs-played"></div>
+        <div class="match-history"></div>
+        <div class="position-played"></div>
+        <div class="friends"></div>
+    </section>
+</main>
+<% } else { %>
+    <p>Ingresa tu nombre aqui 👇</p>
+<% } %>
+<script src="app.js"></script>
+
+<%- include ("partials/footer.ejs") %>

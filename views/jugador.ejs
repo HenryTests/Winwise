@@ -1,0 +1,272 @@
+<%- include ("partials/header.ejs") %>
+
+
+<% if (locals.content) {%>
+<main class="body-main">
+    <section class="player-info">
+        <div class="profile-bg">
+            <img src="images/splash/Morgana_41.jpg" alt="" class="img-bg">
+            <div class="img-overlay"></div>
+            <div class="player-data">
+                <div class="player-icon">
+                    <img src="images/profileicon/<%=content[0].profileIconId%>.png" alt="" class="porfile-icon">
+                    <img src="images/ranked-emblems/wings/wings_<%=content[1][1].tier%>.png" alt="" class="wings-overlay">
+                </div>
+                <div class="container-player-name"><h2><%= content[0].name %></h2></div>
+                <div class="container-player-level"><p>Lvl-<%= content[0].summonerLevel %></p></div>
+                <div class="container-section">
+                    <form action="search" method="post">
+                        <select id="section" name="section">
+                            <option value="resumen">Resumen</option>
+                            <option value="campeones">Campeones</option>
+                            <option value="records">Records</option>
+                            <option value="desafios">Desafios</option>            
+                          </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="player-stats">
+        <div class="container-stats-left">
+            <div class="soloduo-rank">
+                <h3>Clasificatoria solo/dúo</h3>
+                <div class="container-solorank">
+                    <div class="emblem"><img src="images/ranked-emblems/<%=content[1][1].tier%>-emblem.png" alt=""></div>
+                    <div class="container-liga">
+                        <div class="liga"><p><%= content[1][1].tier %> <%= content[1][1].rank %></p></div>
+                        <div class="puntos"><p><%= content[1][1].leaguePoints %> PL</p></div>
+                    </div>
+                    <div class="container-juegos">
+                        <div class="juegos"><p><%= content[1][1].wins %> V <%= content[1][1].losses %> D</p></div>
+                        <div class="winrate"><p>Winrate <%= Math.round((content[1][1].wins / (content[1][1].wins + content[1][1].losses)) * 100) %>%</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-rank">
+                <h3>Clasificatoria flexible</h3>
+                <div class="container-flexrank">
+                    <div class="emblem"><img src="images/ranked-emblems/<%=content[1][0].tier%>-emblem.png" alt=""></div>
+                    <div class="container-liga">
+                        <div class="liga"><p>Master</p></div>
+                        <div class="puntos"><p>130 PL</p></div>
+                    </div>
+                    <div class="container-juegos">
+                        <div class="juegos"><p>220 V 199 D</p></div>
+                        <div class="winrate"><p>Winrate 56%</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-champs-played" id="championsContainer">
+                <div class="container-category" id="category">
+                    <button  class="category-button" data-category="todo">Todo</button>
+                    <button class="category-button" data-category="soloduo">Clasificatoria solo/dúo</button>
+                    <button class="category-button" data-category="flex">Clasificatoria flexible</button>
+                </div>
+                <div class="container-categorys" data-category="todo">
+                    <% for (const championName in content[3].champions) { %>
+                        <% const championData = content[3].champions[championName] %>
+                        <% const kda = ((championData.kills + championData.assists) / championData.deaths)%>
+                        <div class="champion-container"> 
+                            <div class="champion-data1">
+                                <div class="champion-img">
+                                    <img src="images/champion/<%= championData.name %>.png" alt="">
+                                </div>
+                                <div class="champion-row-data1">
+                                    <p><span class="negritas"><%= championData.name %></span></p>
+                                    <p><span class="gray">CS <%= championData.totalMinionsKilled %></span></p>
+                                </div>
+                            </div>
+                            <div class="champion-data2">
+                                <p><span class="negritas kda"><%= kda.toFixed(2) %>:1 KDA</span></p>
+                                <p><span class="gray"><%= championData.kills %>/<%= championData.deaths %>/<%= championData.assists %></span></p>
+                            </div>
+                            <div class="champion-data3">
+                                <p><span class="negritas"><%= (championData.wins / championData.playCount) * 100 %>%</span></p>
+                                <p><span class="gray"><%= championData.playCount %> jugado</span></p>
+                            </div>
+                        </div>
+                   <% }; %>
+                </div>
+                <div class="container-categorys" data-category="soloduo">
+                    <% for (const championName in content[4].queue.soloduo.champions) { %>
+                        <% const championData = content[4].queue.soloduo.champions[championName] %>
+                        <% const kda = ((championData.kills + championData.assists) / championData.deaths)%>
+                        <div class="champion-container"> 
+                            <div class="champion-data1">
+                                <div class="champion-img">
+                                    <img src="images/champion/<%= championData.name %>.png" alt="">
+                                </div>
+                                <div class="champion-row-data1">
+                                    <p><span class="negritas"><%= championData.name %></span></p>
+                                    <p><span class="gray">CS <%= championData.totalMinionsKilled %></span></p>
+                                </div>
+                            </div>
+                            <div class="champion-data2">
+                                <p><span class="negritas kda"><%= kda.toFixed(2) %>:1 KDA</span></p>
+                                <p><span class="gray"><%= championData.kills %>/<%= championData.deaths %>/<%= championData.assists %></span></p>
+                            </div>
+                            <div class="champion-data3">
+                                <p><span class="negritas"><%= (championData.wins / championData.playCount) * 100 %>%</span></p>
+                                <p><span class="gray"><%= championData.playCount %> jugado</span></p>
+                            </div>
+                        </div>
+                   <% }; %>
+                </div>
+                <div class="container-categorys" data-category="flex">
+                    <% for (const championName in content[4].queue.flex.champions) { %>
+                        <% const championData = content[4].queue.flex.champions[championName] %>
+                        <% const kda = ((championData.kills + championData.assists) / championData.deaths)%>
+                        <div class="champion-container"> 
+                            <div class="champion-data1">
+                                <div class="champion-img">
+                                    <img src="images/champion/<%= championData.name %>.png" alt="">
+                                </div>
+                                <div class="champion-row-data1">
+                                    <p><span class="negritas"><%= championData.name %></span></p>
+                                    <p><span class="gray">CS <%= championData.totalMinionsKilled %></span></p>
+                                </div>
+                            </div>
+                            <div class="champion-data2">
+                                <p><span class="negritas kda"><%= kda.toFixed(2) %>:1 KDA</span></p>
+                                <p><span class="gray"><%= championData.kills %>/<%= championData.deaths %>/<%= championData.assists %></span></p>
+                            </div>
+                            <div class="champion-data3">
+                                <p><span class="negritas"><%= (championData.wins / championData.playCount) * 100 %>%</span></p>
+                                <p><span class="gray"><%= championData.playCount %> jugado</span></p>
+                            </div>
+                        </div>
+                   <% }; %>
+                </div>
+                                
+            </div>
+        </div>
+        <div class="container-stats-right">
+            <div class="container-games-played" id="games">
+                <div class="container-category-games" id="category-games">
+                    <button data-category="todo">Todo</button>
+                    <button data-category="soloduo">Clasificatoria solo/dúo</button>
+                    <button data-category="flex">Clasificatoria flexible</button>
+                    <button data-category="normales">Seleccion oculta</button>
+                </div>
+                <div class="container-categorys2" data-category="todo">
+                   <% content[2].forEach(element => { %>
+                        <div class="game-container">
+                            <div class="game-data-1">
+                                
+                            </div>
+                            <div class="game-data-2">
+
+                            </div>
+                            <div class="game-data-3">
+
+                            </div>
+                            <div class="game-data-4">
+
+                            </div>
+                            <div class="game-data-5">
+
+                            </div>
+                        </div>
+                   <% }); %>
+                </div>
+                <div class="container-categorys" data-category="soloduo">
+                   
+                </div>
+                <div class="container-categorys" data-category="flex">
+                    
+                </div>
+                                
+            </div>
+        </div>
+        </div>
+
+    </section>
+
+
+</main>
+<% } else { %>
+    <main class="body-main">
+        <section class="player-info">
+            <img src="../public/images/splash/Morgana_41.jpg" alt="">
+        </section>
+    
+    
+    
+    </main>
+    
+<% } %>
+<script src="app.js">
+    
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Por defecto, muestra todos los campeones
+        showChampions("todo");
+
+        // Escucha los clics en los botones de categoría
+        var todoButton = document.querySelector(".category-button[data-category='todo']");
+        var soloduoButton = document.querySelector(".category-button[data-category='soloduo']");
+        var flexButton = document.querySelector(".category-button[data-category='flex']");
+
+        todoButton.addEventListener("click", function () {
+            showChampions("todo");
+        });
+
+        soloduoButton.addEventListener("click", function () {
+            showChampions("soloduo");
+        });
+
+        flexButton.addEventListener("click", function () {
+            showChampions("flex");
+        });
+        
+
+        
+    });
+
+    function showChampions(category) {
+        // Oculta todos los contenedores de categorías
+        var categoryContainers = document.querySelectorAll(".container-categorys");
+        for (var i = 0; i < categoryContainers.length; i++) {
+            categoryContainers[i].style.display = "none";
+        }
+
+        // Muestra el contenedor de la categoría seleccionada
+        var categoryContainer = document.querySelector(".container-categorys[data-category='" + category + "']");
+        if (categoryContainer) {
+            categoryContainer.style.display = "block";
+        }
+    };
+
+    
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Selecciona todos los elementos con la clase "kda"
+  const kdaElements = document.querySelectorAll(".kda");
+
+  // Itera a través de los elementos y cambia el color si el KDA es mayor que 2
+  kdaElements.forEach(kdaElement => {
+    const kdaValue = parseFloat(kdaElement.textContent);
+    if (kdaValue < 2) {
+        kdaElement.style.color = "red";
+    }else if (kdaValue >= 2 && kdaValue < 3) {
+        kdaElement.style.color = "orange";
+    }else if (kdaValue >= 3 && kdaValue < 5) {
+        kdaElement.style.color = "green";
+    }else if (kdaValue >= 5) {
+        kdaElement.style.color = "blue";
+    }
+  });
+});
+
+
+</script>
+
+
+
+<%- include ("partials/footer.ejs") %>
