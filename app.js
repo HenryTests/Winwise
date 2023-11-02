@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import axios from "axios";
 const app = express();
 const port = 3000;
-const apiKey = "RGAPI-fe9ff7f9-c4a9-44f3-962e-f7687dbdc962";
+const apiKey = "RGAPI-dfe61fdb-8120-4cb5-8d87-dc0cf3dbb65f";
 
 function unixTimeToMinutes(unixTime) {
     return Math.floor(unixTime / 60); // Divide por 60 para convertir de segundos a minutos

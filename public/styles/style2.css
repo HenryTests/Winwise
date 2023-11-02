@@ -156,17 +156,6 @@ div {
         color: white;
         font-family: 'Fira Sans Condensed', sans-serif;  
     }
-    .container-section{
-        display: flex;
-        width: 15vh;
-        padding-left: 1vh;
-        margin-top: 15vh;
-        margin-left: 81vh;
-        background-color: rgb(199, 0, 57);
-    }
-    .container-section form{
-        display: flex;
-    }
 
     /*stats section*/
     .player-stats{
