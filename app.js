@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import axios from "axios";
 const app = express();
 const port = 3000;
-const apiKey = "RGAPI-dfe61fdb-8120-4cb5-8d87-dc0cf3dbb65f";
+const apiKey = "RGAPI-2c7a3ee6-307c-43cb-905c-da602973b88d";
 
 function unixTimeToMinutes(unixTime) {
     return Math.floor(unixTime / 60); // Divide por 60 para convertir de segundos a minutos
@@ -102,7 +102,7 @@ app.post("/search", async (req, res) => {
 
 
         
-        const informacionIkurama = {
+        const informacionPlayer = {
             summonerName: summonerName,
             kills: 0,
             deaths: 0,
@@ -138,7 +138,7 @@ app.post("/search", async (req, res) => {
                   bottom: 0,
                   utility: 0
                 },
-                champions: {}
+                champions: []
               },
               normal: {
                 kills: 0,
@@ -154,96 +154,132 @@ app.post("/search", async (req, res) => {
                   bottom: 0,
                   utility: 0
                 },
-                champions: {}
+                champions: []
+              },
+              nexusBlitz: {
+                kills: 0,
+                deaths: 0,
+                assists: 0,
+                playCount: 0,
+                wins: 0,
+                losses: 0,
+                position: {
+                  top: 0,
+                  jungle: 0,
+                  middle: 0,
+                  bottom: 0,
+                  utility: 0
+                },
+                champions: []
+              },
+              aram: {
+                kills: 0,
+                deaths: 0,
+                assists: 0,
+                playCount: 0,
+                wins: 0,
+                losses: 0,
+                position: {
+                  top: 0,
+                  jungle: 0,
+                  middle: 0,
+                  bottom: 0,
+                  utility: 0
+                },
+                champions: []
               }
             }
           };
           
           combinedData.forEach(partida => {
-            const ikuramaInfo = partida.info.participants.find(participante => participante.summonerName === summonerName);
+            const playerInfo = partida.info.participants.find(participante => participante.summonerName === summonerName);
             let queueType;
-            let totalMinionsk = ikuramaInfo.neutralMinionsKilled + ikuramaInfo.totalMinionsKilled;
+            let totalMinionsk = playerInfo.neutralMinionsKilled + playerInfo.totalMinionsKilled;
             console.log("total minions");
             console.log(totalMinionsk);
-            if (ikuramaInfo) {
-              informacionIkurama.kills += ikuramaInfo.kills;
-              informacionIkurama.deaths += ikuramaInfo.deaths;
-              informacionIkurama.assists += ikuramaInfo.assists;
+            if (playerInfo) {
+              informacionPlayer.kills += playerInfo.kills;
+              informacionPlayer.deaths += playerInfo.deaths;
+              informacionPlayer.assists += playerInfo.assists;
           
-              if (ikuramaInfo.championName) {
+              if (playerInfo.championName) {
                 const queueId = partida.info.queueId;
                               
                 if (queueId === 420) {
                   queueType = 'soloduo';
                 } else if (queueId === 440) {
                   queueType = 'flex';
-                } else if (queueId === 400) {
+                } else if (queueId === 400 || queueId === 430) {
                   queueType = 'normal';
+                } else if (queueId === 1300) {
+                  queueType = 'nexusBlitz';
+                } else if (queueId === 450 || queueId === 100) {
+                  queueType = 'aram';
                 }
           
                 if (!queueType) {
                   return;
                 }
           
-                if (ikuramaInfo.win === true) {
-                  informacionIkurama.queue[queueType].wins += 1;
+                if (playerInfo.win === true) {
+                  informacionPlayer.queue[queueType].wins += 1;
                 } else {
-                  informacionIkurama.queue[queueType].losses += 1;
+                  informacionPlayer.queue[queueType].losses += 1;
                 }
           
                 // Incrementa el contador de posición correspondiente
-                switch (ikuramaInfo.individualPosition) {
+                switch (playerInfo.individualPosition) {
                   case 'TOP':
-                    informacionIkurama.queue[queueType].position.top += 1;
+                    informacionPlayer.queue[queueType].position.top += 1;
                     break;
                   case 'JUNGLE':
-                    informacionIkurama.queue[queueType].position.jungle += 1;
+                    informacionPlayer.queue[queueType].position.jungle += 1;
                     break;
                   case 'MIDDLE':
-                    informacionIkurama.queue[queueType].position.middle += 1;
+                    informacionPlayer.queue[queueType].position.middle += 1;
                     break;
                   case 'BOTTOM':
-                    informacionIkurama.queue[queueType].position.bottom += 1;
+                    informacionPlayer.queue[queueType].position.bottom += 1;
                     break;
                   case 'UTILITY':
-                    informacionIkurama.queue[queueType].position.utility += 1;
+                    informacionPlayer.queue[queueType].position.utility += 1;
                     break;
                   default:
                     break;
                 }
                
-                informacionIkurama.queue[queueType].playCount++;
-                informacionIkurama.queue[queueType].kills += ikuramaInfo.kills;
-                informacionIkurama.queue[queueType].deaths += ikuramaInfo.deaths;
-                informacionIkurama.queue[queueType].assists += ikuramaInfo.assists;
+                informacionPlayer.queue[queueType].playCount++;
+                informacionPlayer.queue[queueType].kills += playerInfo.kills;
+                informacionPlayer.queue[queueType].deaths += playerInfo.deaths;
+                informacionPlayer.queue[queueType].assists += playerInfo.assists;
           
-                if (!informacionIkurama.queue[queueType].champions[ikuramaInfo.championName]) {                  
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName] = {
-                    name: ikuramaInfo.championName,
+                if (!informacionPlayer.queue[queueType].champions[playerInfo.championName]) {                  
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName] = {
+                    name: playerInfo.championName,
                     wins: 0,
                     losses: 0,
                     playCount: 1,
-                    kills: ikuramaInfo.kills,
-                    deaths: ikuramaInfo.deaths,
-                    assists: ikuramaInfo.assists,
+                    kills: playerInfo.kills,
+                    deaths: playerInfo.deaths,
+                    assists: playerInfo.assists,
                     timePlayed: partida.info.gameDuration,
                     totalMinionsKilled: totalMinionsk
                   };
                 } else {
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].playCount++;
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].kills += ikuramaInfo.kills;
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].deaths += ikuramaInfo.deaths;
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].assists += ikuramaInfo.assists;
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].timePlayed += partida.info.gameDuration;
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].totalMinionsKilled += totalMinionsk;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].playCount++;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].kills += playerInfo.kills;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].deaths += playerInfo.deaths;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].assists += playerInfo.assists;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].timePlayed += partida.info.gameDuration;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].totalMinionsKilled += totalMinionsk;
                 }
           
-                if (partida.info.teams[0].win === true && ikuramaInfo.teamId === 100) {
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].wins += 1;
-                } else if (partida.info.teams[1].win === true && ikuramaInfo.teamId === 200) {
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].wins += 1;
+                if (partida.info.teams[0].win === true && playerInfo.teamId === 100) {
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].wins += 1;
+                } else if (partida.info.teams[1].win === true && playerInfo.teamId === 200) {
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].wins += 1;
                 } else {
-                  informacionIkurama.queue[queueType].champions[ikuramaInfo.championName].losses += 1;
+                  informacionPlayer.queue[queueType].champions[playerInfo.championName].losses += 1;
                 }
               }
             }
@@ -253,38 +289,134 @@ app.post("/search", async (req, res) => {
           };
           
           // Combinar y sumar estadísticas de campeones en nuevoObjeto
-          Object.keys(informacionIkurama.queue.flex.champions).forEach(championName => {
+          Object.keys(informacionPlayer.queue.flex.champions).forEach(championName => {
             
             if (championsStats.champions[championName]) {
-            championsStats.champions[championName].kills += informacionIkurama.queue.flex.champions[championName].kills;
-            championsStats.champions[championName].deaths += informacionIkurama.queue.flex.champions[championName].deaths;
-            championsStats.champions[championName].assists += informacionIkurama.queue.flex.champions[championName].assists;
-            championsStats.champions[championName].wins += informacionIkurama.queue.flex.champions[championName].wins;
-            championsStats.champions[championName].losses += informacionIkurama.queue.flex.champions[championName].losses;
-            championsStats.champions[championName].playCount += informacionIkurama.queue.flex.champions[championName].playCount;
-            championsStats.champions[championName].timePlayed += informacionIkurama.queue.flex.champions[championName].timePlayed;
-            championsStats.champions[championName].totalMinionsKilled += informacionIkurama.queue.flex.champions[championName].totalMinionsKilled;
+            championsStats.champions[championName].kills += informacionPlayer.queue.flex.champions[championName].kills;
+            championsStats.champions[championName].deaths += informacionPlayer.queue.flex.champions[championName].deaths;
+            championsStats.champions[championName].assists += informacionPlayer.queue.flex.champions[championName].assists;
+            championsStats.champions[championName].wins += informacionPlayer.queue.flex.champions[championName].wins;
+            championsStats.champions[championName].losses += informacionPlayer.queue.flex.champions[championName].losses;
+            championsStats.champions[championName].playCount += informacionPlayer.queue.flex.champions[championName].playCount;
+            championsStats.champions[championName].timePlayed += informacionPlayer.queue.flex.champions[championName].timePlayed;
+            championsStats.champions[championName].totalMinionsKilled += informacionPlayer.queue.flex.champions[championName].totalMinionsKilled;
             } else {
-            championsStats.champions[championName] = { ...informacionIkurama.queue.flex.champions[championName] };
+            championsStats.champions[championName] = { ...informacionPlayer.queue.flex.champions[championName] };
             }
           });
           
-          Object.keys(informacionIkurama.queue.soloduo.champions).forEach(championName => {
+          Object.keys(informacionPlayer.queue.soloduo.champions).forEach(championName => {
             if (championsStats.champions[championName]) {
-            championsStats.champions[championName].kills += informacionIkurama.queue.soloduo.champions[championName].kills;
-            championsStats.champions[championName].deaths += informacionIkurama.queue.soloduo.champions[championName].deaths;
-            championsStats.champions[championName].assists += informacionIkurama.queue.soloduo.champions[championName].assists;
-            championsStats.champions[championName].wins += informacionIkurama.queue.soloduo.champions[championName].wins;
-            championsStats.champions[championName].losses += informacionIkurama.queue.soloduo.champions[championName].losses;
-            championsStats.champions[championName].playCount += informacionIkurama.queue.soloduo.champions[championName].playCount;
-            championsStats.champions[championName].timePlayed += informacionIkurama.queue.soloduo.champions[championName].timePlayed;
-            championsStats.champions[championName].totalMinionsKilled += informacionIkurama.queue.soloduo.champions[championName].totalMinionsKilled;
+            championsStats.champions[championName].kills += informacionPlayer.queue.soloduo.champions[championName].kills;
+            championsStats.champions[championName].deaths += informacionPlayer.queue.soloduo.champions[championName].deaths;
+            championsStats.champions[championName].assists += informacionPlayer.queue.soloduo.champions[championName].assists;
+            championsStats.champions[championName].wins += informacionPlayer.queue.soloduo.champions[championName].wins;
+            championsStats.champions[championName].losses += informacionPlayer.queue.soloduo.champions[championName].losses;
+            championsStats.champions[championName].playCount += informacionPlayer.queue.soloduo.champions[championName].playCount;
+            championsStats.champions[championName].timePlayed += informacionPlayer.queue.soloduo.champions[championName].timePlayed;
+            championsStats.champions[championName].totalMinionsKilled += informacionPlayer.queue.soloduo.champions[championName].totalMinionsKilled;
             } else {
-            championsStats.champions[championName] = { ...informacionIkurama.queue.soloduo.champions[championName] };
+            championsStats.champions[championName] = { ...informacionPlayer.queue.soloduo.champions[championName] };
             }
-          });          
-          data.push(championsStats);         
-          data.push(informacionIkurama);                          
+          });      
+          Object.keys(informacionPlayer.queue.normal.champions).forEach(championName => {
+            if (championsStats.champions[championName]) {
+            championsStats.champions[championName].kills += informacionPlayer.queue.normal.champions[championName].kills;
+            championsStats.champions[championName].deaths += informacionPlayer.queue.normal.champions[championName].deaths;
+            championsStats.champions[championName].assists += informacionPlayer.queue.normal.champions[championName].assists;
+            championsStats.champions[championName].wins += informacionPlayer.queue.normal.champions[championName].wins;
+            championsStats.champions[championName].losses += informacionPlayer.queue.normal.champions[championName].losses;
+            championsStats.champions[championName].playCount += informacionPlayer.queue.normal.champions[championName].playCount;
+            championsStats.champions[championName].timePlayed += informacionPlayer.queue.normal.champions[championName].timePlayed;
+            championsStats.champions[championName].totalMinionsKilled += informacionPlayer.queue.normal.champions[championName].totalMinionsKilled;
+            } else {
+            championsStats.champions[championName] = { ...informacionPlayer.queue.normal.champions[championName] };
+            }
+          });     
+          Object.keys(informacionPlayer.queue.nexusBlitz.champions).forEach(championName => {
+            if (championsStats.champions[championName]) {
+            championsStats.champions[championName].kills += informacionPlayer.queue.nexusBlitz.champions[championName].kills;
+            championsStats.champions[championName].deaths += informacionPlayer.queue.nexusBlitz.champions[championName].deaths;
+            championsStats.champions[championName].assists += informacionPlayer.queue.nexusBlitz.champions[championName].assists;
+            championsStats.champions[championName].wins += informacionPlayer.queue.nexusBlitz.champions[championName].wins;
+            championsStats.champions[championName].losses += informacionPlayer.queue.nexusBlitz.champions[championName].losses;
+            championsStats.champions[championName].playCount += informacionPlayer.queue.nexusBlitz.champions[championName].playCount;
+            championsStats.champions[championName].timePlayed += informacionPlayer.queue.nexusBlitz.champions[championName].timePlayed;
+            championsStats.champions[championName].totalMinionsKilled += informacionPlayer.queue.nexusBlitz.champions[championName].totalMinionsKilled;
+            } else {
+            championsStats.champions[championName] = { ...informacionPlayer.queue.nexusBlitz.champions[championName] };
+            }
+          });     
+          Object.keys(informacionPlayer.queue.aram.champions).forEach(championName => {
+            if (championsStats.champions[championName]) {
+            championsStats.champions[championName].kills += informacionPlayer.queue.aram.champions[championName].kills;
+            championsStats.champions[championName].deaths += informacionPlayer.queue.aram.champions[championName].deaths;
+            championsStats.champions[championName].assists += informacionPlayer.queue.aram.champions[championName].assists;
+            championsStats.champions[championName].wins += informacionPlayer.queue.aram.champions[championName].wins;
+            championsStats.champions[championName].losses += informacionPlayer.queue.aram.champions[championName].losses;
+            championsStats.champions[championName].playCount += informacionPlayer.queue.aram.champions[championName].playCount;
+            championsStats.champions[championName].timePlayed += informacionPlayer.queue.aram.champions[championName].timePlayed;
+            championsStats.champions[championName].totalMinionsKilled += informacionPlayer.queue.aram.champions[championName].totalMinionsKilled;
+            } else {
+            championsStats.champions[championName] = { ...informacionPlayer.queue.aram.champions[championName] };
+            }
+          });    
+         
+         
+          // Convierte los valores del objeto "champions" en un arreglo de objetos
+          const campeonesArray = Object.entries(championsStats.champions).map(([nombre, datos]) => ({ nombre, ...datos }));
+          
+          // Ordena el arreglo de campeones por la propiedad deseada (por ejemplo, "playCount")
+          campeonesArray.sort((a, b) => b.playCount - a.playCount);
+          
+          // Crea un nuevo objeto con los nombres de campeón como claves
+          const campeonesOrdenados = {
+            champions:{}
+          };
+          campeonesArray.forEach(campeon => {
+            campeonesOrdenados.champions[campeon.nombre] = campeon;
+          });
+          
+
+          
+          
+          // Convierte los valores del objeto "champions" en un arreglo de objetos
+          const campeonesArrayFlex = Object.entries(informacionPlayer.queue.flex.champions).map(([nombre, datos]) => ({ nombre, ...datos }));
+          
+          // Ordena el arreglo de campeones por la propiedad deseada (por ejemplo, "playCount")
+          campeonesArrayFlex.sort((a, b) => b.playCount - a.playCount);
+          
+          // Crea un nuevo objeto con los campeones ordenados
+          const campeonesOrdenadosFlex = {};
+          
+          campeonesArrayFlex.forEach(campeon => {
+            campeonesOrdenadosFlex[campeon.nombre] = campeon;
+          });
+          
+          // Actualiza la propiedad "champions" del objeto "flex" con los campeones ordenados
+          informacionPlayer.queue.flex.champions = campeonesOrdenadosFlex;          
+          
+
+          // Convierte los valores del objeto "champions" en un arreglo de objetos
+          const campeonesArraySolo = Object.entries(informacionPlayer.queue.soloduo.champions).map(([nombre, datos]) => ({ nombre, ...datos }));
+          
+          // Ordena el arreglo de campeones por la propiedad deseada (por ejemplo, "playCount")
+          campeonesArraySolo.sort((a, b) => b.playCount - a.playCount);
+          
+          // Crea un nuevo objeto con los campeones ordenados
+          const campeonesOrdenadosSolo = {};
+          
+          campeonesArraySolo.forEach(campeon => {
+            campeonesOrdenadosSolo[campeon.nombre] = campeon;
+          });
+          
+          // Actualiza la propiedad "champions" del objeto "flex" con los campeones ordenados
+          informacionPlayer.queue.soloduo.champions = campeonesOrdenadosSolo;  
+
+          console.log("orden");
+          console.log(informacionPlayer.queue.flex.champions);
+          data.push(campeonesOrdenados);         
+          data.push(informacionPlayer);                          
         
         console.log("game data");
         console.log(data);

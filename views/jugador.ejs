@@ -2,6 +2,7 @@
 
 
 <% if (locals.content) {%>
+
 <main class="body-main">
     <section class="player-info">
         <div class="profile-bg">
@@ -72,7 +73,7 @@
                                 <p><span class="gray"><%= championData.kills %>/<%= championData.deaths %>/<%= championData.assists %></span></p>
                             </div>
                             <div class="champion-data3">
-                                <p><span class="negritas"><%= (championData.wins / championData.playCount) * 100 %>%</span></p>
+                                <p><span class="negritas"><%= ((championData.wins / championData.playCount) * 100).toFixed(0) %>%</span></p>
                                 <p><span class="gray"><%= championData.playCount %> jugado</span></p>
                             </div>
                         </div>
@@ -242,14 +243,12 @@ document.addEventListener("DOMContentLoaded", function() {
   // Itera a través de los elementos y cambia el color si el KDA es mayor que 2
   kdaElements.forEach(kdaElement => {
     const kdaValue = parseFloat(kdaElement.textContent);
-    if (kdaValue < 2) {
-        kdaElement.style.color = "red";
-    }else if (kdaValue >= 2 && kdaValue < 3) {
-        kdaElement.style.color = "orange";
-    }else if (kdaValue >= 3 && kdaValue < 5) {
+    if (kdaValue < 3) {
+        kdaElement.style.color = "black";
+    }else if (kdaValue >= 3 && kdaValue < 6) {
         kdaElement.style.color = "green";
-    }else if (kdaValue >= 5) {
-        kdaElement.style.color = "blue";
+    }else if (kdaValue >= 6) {
+        kdaElement.style.color = "red";
     }
   });
 });
